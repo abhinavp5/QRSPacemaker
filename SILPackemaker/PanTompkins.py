@@ -1,44 +1,44 @@
 import numpy as np
-from Qrs_detect.r_peak import run_pantompkins
+from Qrs_detect.r_peak import run_pantompkins  # your C wrapper
 
 class PanTompkins:
     def __init__(self, sampling_rate: int = 360, delay: int = 22):
         self.fs = sampling_rate
         self.delay = delay
-        self._detections = None  # np.ndarray of 0/1
-        self._idx = 0            # current sample index
+        self._detections = None  # bool array aligned to full ECG
+        self._idx = 0
 
-    def prepare(self, ecg_array: np.ndarray):
+    def prepare_from_full_signal(self, ecg_array_int: np.ndarray):
         """
-        Pre-run the Pan–Tompkins C code on the full ECG for this episode.
-        ecg_array: 1D numpy array of ECG samples for the entire simulation.
+        Run the C Pan–Tompkins on the entire episode and cache detections.
+        ecg_array_int must be int32 and match FS used in the C code.
         """
-        ecg_array = np.asarray(ecg_array, dtype=np.int32)
-        det = run_pantompkins(ecg_array)  # length ~ N - delay
+        ecg_array_int = np.asarray(ecg_array_int, dtype=np.int32)
+        N = ecg_array_int.shape[0]
 
-        # Align to original ECG length by padding at the front with zeros
-        N = ecg_array.shape[0]
+        det = run_pantompkins(ecg_array_int)  # length ≈ N - delay
         pad = N - det.shape[0]
         if pad < 0:
-            raise ValueError("PanTompkins output longer than input, check DELAY & C code.")
-        det_aligned = np.concatenate([np.zeros(pad, dtype=np.int32), det])
+            raise ValueError("PanTompkins output longer than input; check FS/DELAY.")
 
+        det_aligned = np.concatenate([np.zeros(pad, dtype=np.int32), det])
         self._detections = det_aligned.astype(bool)
+        self._idx = 0
+
+    def reset(self):
         self._idx = 0
 
     def step(self, ecg_sample) -> bool:
         """
-        Called once per sample by the Pacemaker.
-        ecg_sample is not used here because detection was done offline in prepare().
-        Returns True only at samples corresponding to detected R-peaks.
+        Called once per sample by Pacemaker.
+        ecg_sample is not used here because detection was precomputed.
         """
         if self._detections is None:
-            raise RuntimeError("PanTompkins.prepare(ecg_array) must be called before step().")
+            raise RuntimeError("Call prepare_from_full_signal() before using step().")
 
         if self._idx >= len(self._detections):
-            # Past end of signal → no more beats
             return False
 
-        is_beat = bool(self._detections[self._idx])
+        flag = bool(self._detections[self._idx])
         self._idx += 1
-        return is_beat
+        return flag
