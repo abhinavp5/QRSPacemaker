@@ -34,7 +34,7 @@
 #define PAN_TOMPKINS
 
 typedef int dataType;
-typedef enum {false, true} bool;
+#include <stdbool.h>
 
 void panTompkins();
 void init(const char file_in[], const char file_out[]);

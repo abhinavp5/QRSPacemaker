@@ -6,7 +6,7 @@ from SILPackemaker.PacingLogic import PacingLogic
 from SILPackemaker.RateModulator import RateModulator
 
 
-def simulate_vvir_on_mitbih(record_name="100", nbg_code="VVIR"):
+def simulate_vvir_on_mitbih(record_name="117", nbg_code="VVIR"):
     """
     Runs Pan–Tompkins + Pacemaker Simulation on MIT-BIH record.
     Returns fs, ecg_norm, sensed_beats, paced_beats, rate_trace.
