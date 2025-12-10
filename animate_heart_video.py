@@ -1,10 +1,14 @@
 import numpy as np
 import matplotlib
-# Try to use Qt5Agg if available, otherwise fallback is automatic usually, but user requested it.
-try:
-    matplotlib.use('Qt5Agg')
-except:
-    pass
+# Try different backends in order of preference
+backends_to_try = ['TkAgg', 'Qt5Agg', 'MacOSX', 'Agg']
+for backend in backends_to_try:
+    try:
+        matplotlib.use(backend)
+        print(f"Using matplotlib backend: {backend}")
+        break
+    except:
+        continue
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.widgets import Slider

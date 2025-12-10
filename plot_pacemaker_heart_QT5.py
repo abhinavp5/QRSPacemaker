@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-matplotlib.use('Qt5Agg')
+# matplotlib.use('Qt5Agg')  # Commented out - use default backend
 
 from simulate import simulate_vvir_on_mitbih
 
