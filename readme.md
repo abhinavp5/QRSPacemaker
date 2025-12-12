@@ -24,14 +24,6 @@ To run the main simulation on MIT-BIH ECG data:
 python simulate.py
 ```
 
-## Images
-
-<!-- Add your images here -->
-<!-- Example: -->
-<!-- ![ECG Signal Processing](path/to/image.png) -->
-<!-- ![Simulink Control Diagram](path/to/diagram.png) -->
-<!-- ![Heart Animation](path/to/animation.gif) -->
-
 ## TODO
 
 - [ ] Add Code for more NBG Codes
